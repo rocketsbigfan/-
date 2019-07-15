@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>手写new</title>
+</head>
+<body>
+
+	<script type="text/javascript">
+		/**
+		*
+		*
+		**/
+		function create() {
+			// 创建一个空对象
+			let obj = Object.create(null)
+			// 继承构造函数的原型对象
+			let target = [].shift.call(arguments)
+			obj.__proto__ = target.prototype
+			// 继承构造函数的方法和属性
+			let ret = target.apply(obj, arguments)
+			// 判断构造函数是否有返回值
+			return ret instanceof Object ? ret : obj
+		}
+
+		/*************测试******************/
+		function Car(color, name) {
+		    this.color = color;
+		    this.name = name
+		}
+
+		let obj = create(Car, '绿色', 'jack')
+		console.log(obj)
+	</script>
+</body>
+</html>

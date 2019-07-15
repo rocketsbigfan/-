@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>柯里化</title>
+</head>
+<body>
+	<script type="text/javascript">
+		/**
+		*	@description 函数柯里化可将部分参数先保存起来，返回一个函数，等到参数足够时，执行原函数
+		*
+		*/
+
+		function curry(fn, ...args) {
+			// 参入函数参数小于参数值时，执行函数
+			if(fn.length <= args.length) {
+				return fn(...args)
+			}
+			return function(...args2) {
+				return curry(fn, ...args, ...args2)
+			}
+		}
+
+		/*******************************测试*************************/
+		/**
+		*
+		*	@params type 判断类型
+		*	@params target 传入判断对象
+		*
+		*/
+		function is(type, target) {
+			return Object.prototype.toString.call(target).toLowerCase() === `[object ${type}]`.toLowerCase()
+		}
+
+		let isArray = curry(is, 'array')
+		let isNumber = curry(is, 'number')
+
+		console.log(isArray([]))
+		console.log(isNumber([]), isNumber(12))
+	</script>
+</body>
+</html>
