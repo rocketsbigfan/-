@@ -62,6 +62,33 @@
 		test.selfCallES3(obj, 'es3', '18')
 
 		test.selfCallES6(obj, 'es6', '20')
+		
+		// 实现bind，返回一个新函数
+		// 需注意，bind绑定this之后，如果new调用，则原this绑定失效，需要判断this指向
+		// bind绑定之后，可以访问原函数的原型对象
+		Function.prototype.myBind = function(context) {
+			var self = this
+			var args = Array.prototype.slice(1)
+			// 创建一个新函数
+			function fbound() {
+				// 判断是否为new函数执行，如果是，bind绑定失效，this指向该实例
+				var isNew = this instanceof fbound
+				return self.apply(isNew ? this : Object(context), args.concat(arguments))
+			}
+			// 实例可以访问原构造函数的原型
+			var fNoP = function() {}
+			fNoP.prototype = this.prototype
+			fbound.prototype = new fNoP()
+			// 返回函数
+			return fbound
+		}
+		function bar() {
+			this.a = 1
+			this.b = 2
+			console.log(this)
+		}
+		let foo = bar.myBind({a: 3, b: 4})
+		console.log(new foo())
 	</script>
 </body>
 </html>
