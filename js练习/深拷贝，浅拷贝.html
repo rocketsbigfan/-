@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>深拷贝，浅拷贝</title>
+</head>
+<body>
+	<script type="text/javascript">
+		/**
+		*
+		*	@description 浅拷贝，拷贝基础变量类型，当属性值为引用类型时，拷贝的是指向引用类型的地址
+		*	Object.assign 和ES6的扩展运算符...是浅拷贝
+		*/
+
+		function clone(source) {
+			var target = {}
+			for(let key in source) {
+				target[key] = source[key]
+			}
+			return target
+		}
+
+		/**
+		*
+		*	@description 深拷贝，如遇属性为引用类型时，对属性进行递归
+		*	需解决三个问题：
+		*	1. 循环引用
+		*	2. 解决symbol值
+		*	3. 解决子属性为引用类型
+		*/
+
+		function deepClone(source, hash = new WeakMap()) {
+			// 判断传入的是否为对象
+			if(!isObject(source)) return source;
+			// 解决循环引用为题，或对同属性
+			if(hash.has(source)) return hash.get(source);
+
+			let target = Array.isArray(source) ? [] : {};
+			hash.set(source, target)
+
+			// Reflect.ownKeys 获取所有键值
+			Reflect.ownKeys(source).forEach(key => {
+				if(isObject(source[key])) {
+					target[key] = deepClone(source[key])
+				} else {
+					target[key] = source[key]
+				}
+			})
+
+			return target
+
+		}
+
+		function isObject(obj) {
+			return obj === 'object' && obj != null;
+		}
+	</script>
+</body>
+</html>

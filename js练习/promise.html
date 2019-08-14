@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>手写promise</title>
+</head>
+<body>
+
+	<script type="text/javascript">
+		/**
+		*
+		*
+		**/
+		const PENDING = 'pending'
+		const FULFILLED = 'fulfillef'
+		const REJECTED = 'rejected'
+		class MPromise {
+			constructor(fn) {
+				let self = this
+				self.status = PENDING
+				self.value = null
+				self.error = null
+				self.onFulfilledCallbacks  = []
+				self.onRejectedCallbacks  = []
+
+				function resolve(value) {
+					//利用setTimeout特性将具体执行放到then之后
+				    if(self.status === PENDING) {
+
+					    setTimeout(() => {
+					        self.status = FULFILLED
+					        self.value = value
+					        self.onFulfilledCallbacks.forEach(callback => callback(self.value))
+					    })
+				    }
+				}
+
+				function reject(error) {
+					if(self.status === PENDING) {
+						setTimeout(() => {
+					        self.status = REJECTED
+					        self.error = error
+					        self.onRejectedCallbacks.forEach(callback => callback(self.error))
+					    })
+
+					}
+				}
+
+				fn(resolve, reject)
+			}
+
+			then(onFulfilled, onRejected) {
+				if(this.status === PENDING) {
+			        this.onFulfilledCallbacks.push(onFulfilled)
+			        this.onRejectedCallbacks.push(onRejected)
+				}else if(this.status === FULFILLED) {
+					// 如果状态是fulfilled,直接执行成功回调
+					onFulfilled(this.value)
+				}else {
+					// 如果状态是rejected,直接执行失败回调
+					onRejected(this.error)
+				}
+
+				return this
+			}
+		}
+
+		let promise = new MPromise((resolve, reject) => {
+		    setTimeout(_ => {
+		    	resolve(111)
+		    }, 1000)
+		});
+
+		promise.then(res => console.log(res))
+
+	</script>
+</body>
+</html>
